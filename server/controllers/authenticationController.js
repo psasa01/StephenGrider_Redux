@@ -1,15 +1,25 @@
+const jwt = require('jwt-simple');
+const config = require('../config');
+
+const tokenForUser = (user) => {
+    const timestamp = new Date().getTime();
+    return jwt.encode({ sub: user.id, iat: timestamp }, config.secret); // sub = subject, iat = issuedAtTime
+}
+
 const User = require('../models/user');
 
-exports.signup = (req, res, next) => {
+exports.signup = async (req, res) => {
 
     const email = req.body.email;
     const password = req.body.password;
 
+    if(!email || !password) {
+        return res.status(422).send({ error: 'You must provide email and password!'});
+    }
+
     // check if a user exists
-    User.findOne({ email }, (err, existingUser) => {
+    const existingUser = await User.findOne({ email });
 
-
-        if (err) { return next(err); }
 
         // if a user exists, return an error
         if (existingUser) {
@@ -18,11 +28,10 @@ exports.signup = (req, res, next) => {
 
         // if a user doesn't exist, create and save new user
         const user = new User({ email, password });
-        user.save((err) => {
-            if (err) { return next(err); }
+        await user.save();
 
-            // respond to request, user created
-            res.json({ success: true });
-        });
-    });
-}
+        // respond to request, user created
+        res.json({ token: tokenForUser(user) });
+            
+};
+    
