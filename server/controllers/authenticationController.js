@@ -13,25 +13,31 @@ exports.signup = async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
-    if(!email || !password) {
-        return res.status(422).send({ error: 'You must provide email and password!'});
+    if (!email || !password) {
+        return res.status(422).send({ error: 'You must provide email and password!' });
     }
 
     // check if a user exists
     const existingUser = await User.findOne({ email });
 
 
-        // if a user exists, return an error
-        if (existingUser) {
-            return res.status(422).send({ error: 'Email is in use' })
-        }
+    // if a user exists, return an error
+    if (existingUser) {
+        return res.status(422).send({ error: 'Email is in use' })
+    }
 
-        // if a user doesn't exist, create and save new user
-        const user = new User({ email, password });
-        await user.save();
+    // if a user doesn't exist, create and save new user
+    const user = new User({ email, password });
+    await user.save();
 
-        // respond to request, user created
-        res.json({ token: tokenForUser(user) });
-            
+    // respond to request, user created
+    res.json({ token: tokenForUser(user) });
+
 };
-    
+
+exports.signin = (req, res, next) => {
+    // user has already had their creds auth'd
+    // we just need to give them the token!
+    // passport assigned authenticated user to req.user!
+    res.send({ token: tokenForUser(req.user) });
+}

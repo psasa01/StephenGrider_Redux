@@ -9,9 +9,15 @@ const errorHandler = (fn) => (req, res, next) => fn(req, res, next).catch(next);
 // since using tokens we don't want session to be created
 const requireAuth = passport.authenticate('jwt', { session: false })
 
+// before even see authentication.signin they must run throught local strategy!
+// if email and password are not correct, they are knocked out of flow!!!
+const requireSignin = passport.authenticate('local', { session: false })
+
 module.exports = (app) => {
-    app.post('/signup', errorHandler(authenticationController.signup));
     app.get('/', requireAuth, (req, res) => {
-        res.send({ hi: 'there!'})
-    })
+        res.send({ hi: 'there!' })
+    });
+    app.post('/signin', requireSignin, authenticationController.signin)
+    app.post('/signup', errorHandler(authenticationController.signup));
+
 }; 
