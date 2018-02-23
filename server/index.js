@@ -4,6 +4,7 @@ const http = require('http');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 const app = express();
 const router = require('./router');
@@ -13,6 +14,7 @@ mongoose.connect('mongodb://sallemao:sgrider@ds145438.mlab.com:45438/sgrider-ser
 
 // App setup
 app.use(morgan('combined')); // logging framework - used for debugging
+app.use(cors()); // accept connections from any source
 app.use(bodyParser.json({ type: '*/*' })); // parsing incoming requests to json
 router(app);
 

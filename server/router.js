@@ -15,7 +15,7 @@ const requireSignin = passport.authenticate('local', { session: false })
 
 module.exports = (app) => {
     app.get('/', requireAuth, (req, res) => {
-        res.send({ hi: 'there!' })
+        res.send({ message: 'message' })
     });
     app.post('/signin', requireSignin, authenticationController.signin)
     app.post('/signup', errorHandler(authenticationController.signup));
