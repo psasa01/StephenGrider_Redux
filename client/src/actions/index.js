@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { browserHistory } from 'react-router';
-import { AUTH_USER, AUTH_ERROR , UNAUTH_USER } from './types';
+import { AUTH_USER, AUTH_ERROR, UNAUTH_USER } from './types';
 
 const ROOT_URL = 'http://localhost:3090';
 
@@ -33,6 +33,34 @@ export const signinUser = ({ email, password }) => {
     }
 }
 
+export const signupUser = ({ email, password }) => {
+    return (dispatch) => {
+        axios.post(`${ROOT_URL}/signup`, { email, password })
+            .then(response => {
+                // if req is good, 
+                // - update state to indicate user is authenticated
+                dispatch({ type: AUTH_USER })
+                // - save the JWT token to localStorage
+                localStorage.setItem('token', response.data.token)
+                // - redirect to the '/feature'
+                browserHistory.push('/feature');
+            })
+            .catch((error) => {
+                // jebeni axios changed
+                // ne moze samo dispatch(authError(response.data.error));
+
+                const response = error.response;
+                // console.log(response.data.error);
+
+                // if req is bad
+                // - show an error to user
+                dispatch(authError(response.data.error));
+
+            })
+
+    }
+}
+
 export const authError = (error) => {
     return {
         type: AUTH_ERROR,
@@ -45,8 +73,3 @@ export const signoutUser = () => {
     return { type: UNAUTH_USER };
 }
 
-export const signupUser = ({ email, password }) => {
-    return (dispatch) => {
-        axios.post(`${ROOT_URL}/signup`, { email, password })
-    }
-}

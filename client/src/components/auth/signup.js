@@ -8,9 +8,17 @@ class Signup extends Component {
         // Call action creator to sign up user!
         this.props.signupUser(formProps);
     }
-
+    renderAlert() {
+        if (this.props.errorMessage) {
+            return (
+                <div className="alert alert-danger">
+                    <strong>Ooops!</strong> {this.props.errorMessage}
+                </div>
+            )
+        }
+    }
     render() {
-        const { handleSubmit, fields: { email, password, passwordConfirm }} = this.props;
+        const { handleSubmit, fields: { email, password, passwordConfirm } } = this.props;
 
         return (
             <form onSubmit={handleSubmit(this.handleFormSubmit.bind(this))}>
@@ -29,6 +37,7 @@ class Signup extends Component {
                     <input type="password" className="form-control" {...passwordConfirm} />
                     {passwordConfirm.touched && passwordConfirm.error && <div className="error">{passwordConfirm.error}</div>}
                 </fieldset>
+                {this.renderAlert()}
                 <button className="btn btn-primary">Sign up!</button>
             </form>
         )
@@ -37,31 +46,36 @@ class Signup extends Component {
 const validate = (formProps) => {
     const errors = {};
 
-    
-    if(!formProps.email) {
+
+    if (!formProps.email) {
         errors.email = 'Please enter an email'
     }
-    
-    if(!formProps.password) {
+
+    if (!formProps.password) {
         errors.password = 'Please enter password'
     }
 
-    if(!formProps.passwordConfirm) {
+    if (!formProps.passwordConfirm) {
         errors.passwordConfirm = 'Please confirm password'
     }
 
-    if(formProps.password !== formProps.passwordConfirm) {
+    if (formProps.password !== formProps.passwordConfirm) {
         errors.password = 'Passwords must match!'
     }
 
     return errors;
 }
 
+const mapStateToProps = (state) => {
+    return { errorMessage: state.auth.error };
+};
+
+
 export default reduxForm({
     form: 'signup',
     fields: ['email', 'password', 'passwordConfirm'],
     validate
-},null , actions)(Signup);
+}, mapStateToProps, actions)(Signup);
 
 
 

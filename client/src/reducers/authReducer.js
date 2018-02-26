@@ -9,11 +9,11 @@ import {
 export default (state = {}, action) => {
     switch (action.type) {
         case AUTH_USER:
-            return { ...state, authenticated: true };
+            return { ...state, error: '', authenticated: true };
         case UNAUTH_USER:
-            return { ...state, authenticated: false };
+            return { ...state, error: '', authenticated: false };
         case AUTH_ERROR:
-            return { ...state, error: action.payload}
+            return { ...state, error: action.payload }
 
     }
     return state;
